@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-color: #F5F7F8;
+    color: #4A4A4A;
+  }
+  #root { min-height: 100vh; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-ks-orange text-white font-semibold px-4 py-2 rounded-lg hover:bg-ks-orange-dark transition-colors duration-150 inline-flex items-center gap-2 text-sm cursor-pointer border-0;
+  }
+  .btn-secondary {
+    @apply bg-ks-green text-white font-semibold px-4 py-2 rounded-lg hover:bg-ks-green-dark transition-colors duration-150 inline-flex items-center gap-2 text-sm cursor-pointer border-0;
+  }
+  .btn-ghost {
+    @apply bg-white text-ks-gray-dark font-medium px-4 py-2 rounded-lg border border-ks-gray-medium hover:bg-ks-gray-light transition-colors duration-150 inline-flex items-center gap-2 text-sm cursor-pointer;
+  }
+  .card { @apply bg-white rounded-card shadow-card p-4; }
+  .input {
+    @apply w-full border border-ks-gray-medium rounded-lg px-3 py-2 text-sm text-ks-gray-dark bg-white focus:outline-none focus:ring-2 focus:ring-ks-green focus:border-transparent transition-all;
+  }
+  .label { @apply block text-xs font-semibold text-ks-gray-dark mb-1 uppercase tracking-wide; }
+  .badge-green { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-ks-green-light text-ks-green; }
+  .badge-orange { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-ks-orange-light text-ks-orange-dark; }
+  .badge-red { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-ks-danger-light text-ks-danger; }
+  .badge-gray { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-ks-gray-light text-ks-gray-dark; }
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #F5F7F8; }
+::-webkit-scrollbar-thumb { background: #D9D9D9; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #4A4A4A; }
