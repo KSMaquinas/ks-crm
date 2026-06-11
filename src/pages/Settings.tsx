@@ -1,6 +1,9 @@
-import { Settings as SettingsIcon, Database, Bell, Smartphone, Link } from 'lucide-react';
+import { Settings as SettingsIcon, Database, Bell, Smartphone, Link, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { useGoogleCalendar } from '../hooks/useGoogleCalendar';
 
 export function Settings() {
+  const { isConnected, login, disconnect } = useGoogleCalendar();
+
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-ks-gray-dark">Configurações</h1>
@@ -47,20 +50,35 @@ export function Settings() {
 
         <div className="card">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-50 rounded-lg"><Link size={18} className="text-blue-600" /></div>
+            <div className="p-2 bg-blue-50 rounded-lg"><Calendar size={18} className="text-blue-600" /></div>
             <div>
               <h3 className="font-semibold text-ks-gray-dark">Google Calendar</h3>
-              <p className="text-xs text-gray-500">Sincronização de agenda</p>
+              <p className="text-xs text-gray-500">Sincronização da sua agenda pessoal</p>
             </div>
           </div>
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Status</span>
-              <span className="badge-orange">Não configurado</span>
+              {isConnected
+                ? <span className="flex items-center gap-1 text-ks-green font-medium"><CheckCircle size={14} /> Conectado</span>
+                : <span className="flex items-center gap-1 text-gray-400"><XCircle size={14} /> Não conectado</span>
+              }
             </div>
-            <button className="btn-ghost text-xs w-full justify-center">
-              <Link size={12} /> Conectar Google
-            </button>
+            {isConnected ? (
+              <div className="space-y-2">
+                <p className="text-xs text-gray-500">Eventos criados na Agenda serão sincronizados automaticamente com seu Google Calendar.</p>
+                <button className="btn-ghost text-xs w-full justify-center text-ks-danger" onClick={disconnect}>
+                  Desconectar Google Calendar
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-gray-500">Conecte sua conta Google para sincronizar eventos da Agenda com o Google Calendar.</p>
+                <button className="btn-primary text-xs w-full justify-center bg-blue-600 hover:bg-blue-700 border-blue-600" onClick={() => login()}>
+                  <Calendar size={12} /> Conectar Google Calendar
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -73,9 +91,7 @@ export function Settings() {
             </div>
           </div>
           <div className="space-y-3 text-sm">
-            {[
-              'Tarefas atrasadas', 'Retornos vencidos', 'Nova mensagem WhatsApp', 'Orçamento aprovado',
-            ].map(label => (
+            {['Tarefas atrasadas', 'Retornos vencidos', 'Nova mensagem WhatsApp', 'Orçamento aprovado'].map(label => (
               <div key={label} className="flex items-center justify-between">
                 <span className="text-gray-600">{label}</span>
                 <div className="w-10 h-5 bg-ks-green rounded-full relative cursor-pointer">
@@ -94,7 +110,7 @@ export function Settings() {
             <div className="font-semibold text-ks-green text-sm">KS CRM — v1.0</div>
             <p className="text-xs text-gray-600 mt-1">
               Sistema CRM desenvolvido exclusivamente para a KS Máquinas Implementos e Irrigação.
-              Cacoal — RO. Powered by Supabase + Lovable Cloud.
+              Cacoal — RO. Powered by Supabase + Vercel.
             </p>
           </div>
         </div>
