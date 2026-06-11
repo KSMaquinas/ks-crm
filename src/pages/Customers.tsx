@@ -37,6 +37,7 @@ export function Customers() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saveError, setSaveError] = useState('');
 
   const filtered = customers.filter(c => {
     const matchSearch = !search || [c.name, c.phone, c.city, c.region_line].some(f => f.toLowerCase().includes(search.toLowerCase()));
@@ -57,10 +58,12 @@ export function Customers() {
     return Object.keys(e).length === 0;
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!validate()) return;
+    setSaveError('');
     const responsible = users.find(u => u.id === form.responsible_user_id);
-    addCustomer({ ...form, responsible, campaign_id: undefined });
+    const { error: err } = await addCustomer({ ...form, responsible, campaign_id: undefined });
+    if (err) { setSaveError(err); return; }
     setShowForm(false);
     setForm({ ...emptyForm });
   }
@@ -176,7 +179,7 @@ export function Customers() {
       </div>
 
       {/* Modal novo cliente */}
-      <Modal open={showForm} onClose={() => { setShowForm(false); setErrors({}); }} title="Novo Cliente" size="xl">
+      <Modal open={showForm} onClose={() => { setShowForm(false); setErrors({}); setSaveError(''); }} title="Novo Cliente" size="xl">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input label="Nome *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} error={errors.name} placeholder="Nome completo" />
           <Input label="Telefone *" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} error={errors.phone} placeholder="(69) 9..." />
@@ -245,7 +248,10 @@ export function Customers() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-ks-gray-medium">
+        {saveError && (
+          <div className="bg-ks-danger-light text-ks-danger text-sm rounded-lg px-3 py-2 mt-4">⚠️ {saveError}</div>
+        )}
+        <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-ks-gray-medium">
           <button className="btn-ghost" onClick={() => setShowForm(false)}>Cancelar</button>
           <button className="btn-primary" onClick={handleSubmit}>
             <Plus size={16} /> Salvar Cliente

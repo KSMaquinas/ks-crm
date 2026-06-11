@@ -31,17 +31,17 @@ export function useCustomers(responsibleId?: string) {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  async function addCustomer(input: Partial<Customer>) {
+  async function addCustomer(input: Partial<Customer>): Promise<{ data: Customer | null; error: string | null }> {
     const { interests, responsible, ...rest } = input;
     const { data, error } = await supabase.from('customers').insert(rest).select().single();
-    if (error || !data) return;
+    if (error || !data) return { data: null, error: error?.message || 'Erro ao salvar cliente' };
     if (interests?.length) {
       await supabase.from('customer_interests').insert(
         interests.map(i => ({ customer_id: data.id, interest_type: i }))
       );
     }
     await fetch();
-    return data;
+    return { data: data as Customer, error: null };
   }
 
   async function updateCustomer(id: string, updates: Partial<Customer>) {
