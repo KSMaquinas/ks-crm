@@ -1,5 +1,5 @@
 import { useGoogleLogin } from '@react-oauth/google';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const TOKEN_KEY = 'google_calendar_token';
 const EXPIRY_KEY = 'google_calendar_expiry';
@@ -14,17 +14,35 @@ function getStoredToken(): string | null {
 export function useGoogleCalendar() {
   const [token, setToken] = useState<string | null>(getStoredToken);
 
+  // Check for token in URL hash after redirect (implicit flow callback)
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token')) {
+      const params = new URLSearchParams(hash.slice(1));
+      const accessToken = params.get('access_token');
+      const expiresIn = params.get('expires_in');
+      if (accessToken && expiresIn) {
+        const expiry = Date.now() + (parseInt(expiresIn) * 1000);
+        localStorage.setItem(TOKEN_KEY, accessToken);
+        localStorage.setItem(EXPIRY_KEY, expiry.toString());
+        setToken(accessToken);
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  }, []);
+
   const isConnected = !!token;
 
   const login = useGoogleLogin({
     scope: 'https://www.googleapis.com/auth/calendar',
+    flow: 'implicit',
     onSuccess: (res) => {
       const expiry = Date.now() + (res.expires_in * 1000);
       localStorage.setItem(TOKEN_KEY, res.access_token);
       localStorage.setItem(EXPIRY_KEY, expiry.toString());
       setToken(res.access_token);
     },
-    onError: () => { /* silent */ },
+    onError: (err) => console.error('Google login error:', err),
   });
 
   function disconnect() {
